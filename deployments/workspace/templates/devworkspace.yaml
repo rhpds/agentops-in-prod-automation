@@ -1,0 +1,36 @@
+---
+apiVersion: workspace.devfile.io/v1alpha2
+kind: DevWorkspace
+metadata:
+  name: {{ .Values.devworkspace.name }}
+  namespace: {{ .Values.namespacePrefix }}-{{ .Values.username }}
+  annotations:
+    che.eclipse.org/che-editor: che-incubator/che-code/latest
+    che.eclipse.org/devfile: |
+      schemaVersion: 2.3.0
+    che.eclipse.org/devfile-source: |
+      scm:
+        repo: {{ .Values.devworkspace.projects.repoUrl }}.git
+        fileName: repo
+      factory:
+        params: url={{ .Values.devworkspace.projects.repoUrl }}
+spec:
+  routingClass: che
+  started: true
+  contributions:
+  - name: editor
+    kubernetes:
+      name: {{ .Values.devworkspacetemplate.name }}
+  template:
+    projects:
+    - name: {{ .Values.devworkspace.name }}
+      git:
+        remotes:
+          origin: {{ .Values.devworkspace.projects.repoUrl }}.git
+        checkoutFrom:
+          revision: {{ .Values.devworkspace.projects.revision }}
+    components:
+    {{- toYaml .Values.devworkspace.components | nindent 4 }}
+    attributes:
+      controller.devfile.io/bootstrap-devworkspace: true
+      controller.devfile.io/storage-type: per-user

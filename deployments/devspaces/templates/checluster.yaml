@@ -1,0 +1,14 @@
+---
+apiVersion: org.eclipse.che/v2
+kind: CheCluster
+metadata:
+  name: devspaces
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  components: {}
+  networking: {}
+  devEnvironments:
+    startTimeoutSeconds: 1200
+    secondsOfInactivityBeforeIdling: -1

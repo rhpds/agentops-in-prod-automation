@@ -1,0 +1,36 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: llama-stack-instance
+  namespace: openshift-gitops
+spec:
+  generators:
+    - list:
+        elements:
+        {{- range $index := until (int .Values.user.count) }}
+          - user: {{ $.Values.user.prefix }}{{ add $index 1 }}
+        {{- end }}
+  template:
+    metadata:
+      name: llama-stack-instance-{{ `{{ user }}` }}
+      namespace: openshift-gitops
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      source:
+        repoURL: {{ .Values.bootstrap.repoURL }}
+        targetRevision: {{ .Values.bootstrap.targetRevision }}
+        path: deployments/llama-stack-instance
+        helm:
+          values: |
+            deployer:
+              domain: {{ .Values.deployer.domain }}
+      destination:
+        name: in-cluster
+        namespace: wksp-{{ `{{ user }}` }}
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

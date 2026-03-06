@@ -1,0 +1,10 @@
+# Default values for llama-stack-instance
+# This is a YAML-formatted file.
+
+# Cluster configuration, for templating routes
+deployer:
+  domain: apps.cluster.example.com
+# Model configuration
+model:
+  name: qwen3-4b-instruct
+  displayName: Qwen 3 4B Instruct 2507

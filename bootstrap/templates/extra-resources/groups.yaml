@@ -1,0 +1,15 @@
+apiVersion: user.openshift.io/v1
+kind: Group
+metadata:
+  name: tier-premium-users
+users:
+{{- range $index := until (int .Values.user.count) }}
+  - {{ $.Values.user.prefix }}{{ add $index 1 }}
+{{- end }}
+---
+apiVersion: user.openshift.io/v1
+kind: Group
+metadata:
+  name: tier-enterprise-users
+users:
+  - admin

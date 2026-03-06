@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubernetes-mcp-server
+  namespace: openshift-gitops
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: oci://ghcr.io/containers/charts/kubernetes-mcp-server
+      targetRevision: 0.1.0
+      path: .
+      helm:
+        valueFiles:
+          - $values/deployments/kubernetes-mcp-server/values.yaml
+    - repoURL: {{ .Values.bootstrap.repoURL}}
+      targetRevision: {{ .Values.bootstrap.targetRevision }}
+      ref: values
+  destination:
+    name: in-cluster
+    namespace: lls-demo
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,34 @@
+# Slack MCP Server Configuration
+
+image:
+  repository: ghcr.io/korotovsky/slack-mcp-server
+  tag: v1.1.28
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+# Slack credentials - configure via secret
+slack:
+  # Option 1: Use existing secret
+  existingSecret: ""
+  # Option 2: Create secret with provided values (not recommended for production)
+  botToken: "xoxb-"
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

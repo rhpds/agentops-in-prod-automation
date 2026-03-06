@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gen-ai-aa-mcp-servers
+  namespace: redhat-ods-applications
+data:
+  Kubernetes-MCP-Server: |
+    {
+      "url": "http://ocp-mcp-server.lls-demo.svc.cluster.local:8080/mcp",
+      "description": "A powerful and flexible Kubernetes Model Context Protocol (MCP) server implementation with support for Kubernetes and OpenShift."
+    }
+  Slack-MCP-Server: |
+    {
+      "url": "http://slack-mcp-server.lls-demo.svc.cluster.local/mcp",
+      "description": "An MCP server for interacting with our workshop Slack instance."
+    }

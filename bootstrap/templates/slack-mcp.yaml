@@ -1,0 +1,26 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: slack-mcp
+  namespace: openshift-gitops
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: {{ .Values.bootstrap.repoURL }}
+    targetRevision: {{ .Values.bootstrap.targetRevision }}
+    path: deployments/slack-mcp
+    helm:
+      valuesObject:
+        slack:
+          botToken: {{ .Values.slackMcpSecret.slackBotToken }}
+  destination:
+    name: in-cluster
+    namespace: lls-demo
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+
