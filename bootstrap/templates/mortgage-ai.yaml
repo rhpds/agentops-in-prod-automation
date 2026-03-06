@@ -1,0 +1,57 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: mortgage-ai
+  namespace: openshift-gitops
+spec:
+  generators:
+    - list:
+        elements:
+        {{- range $index := until (int .Values.user.count) }}
+          - user: {{ $.Values.user.prefix }}{{ add $index 1 }}
+        {{- end }}
+  template:
+    metadata:
+      name: mortgage-ai-{{ `{{ user }}` }}
+      namespace: openshift-gitops
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      source:
+        repoURL: {{ .Values.bootstrap.repoURL }}
+        targetRevision: {{ .Values.bootstrap.targetRevision }}
+        path: deployments/mortgage-ai
+        helm:
+          values: |
+            secrets:
+              AUTH_DISABLED: "true"
+              S3_ENDPOINT: "http://minio-service:9000"
+              S3_ACCESS_KEY: "wksp"
+              S3_SECRET_KEY: "thisisthepassword"
+              LLM_BASE_URL: "https://litellm-prod.apps.maas.redhatworkshops.io/v1"
+              LLM_API_KEY: "XXX"
+              LLM_MODEL: "gpt-oss-120b"
+              COMPANY_NAME: "Fed Aura Capital"
+              MLFLOW_TRACKING_URI: "https://mlflow.redhat-ods-applications.svc.cluster.local:8443"
+              MLFLOW_TRACKING_AUTH: "kubernetes"
+              MLFLOW_EXPERIMENT_NAME: "mortgage-ai"
+              MLFLOW_WORKSPACE: "mortgage-ai"
+              MLFLOW_TRACKING_INSECURE_TLS: "true"
+            minio:
+              enabled: false
+            keycloak:
+              enabled: false
+            seed:
+              enabled: true
+            mlflow:
+              rbac:
+                enabled: true
+      destination:
+        name: in-cluster
+        namespace: wksp-{{ `{{ user }}` }}
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

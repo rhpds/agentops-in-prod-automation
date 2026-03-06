@@ -1,0 +1,26 @@
+# Claude Code
+CLAUDE.md
+
+# Helm
+*.tgz
+charts/
+Chart.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Secrets (never commit)
+*secret*.yaml
+!**/templates/*secret*.yaml
+
+# Temporary files
+*.tmp
+*.bak
+*.log

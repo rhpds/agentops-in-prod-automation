@@ -1,0 +1,22 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: rhoai-prometheus
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  datasource:
+    access: proxy
+    editable: true
+    isDefault: false
+    jsonData:
+      timeInterval: 5s
+      tlsSkipVerify: true
+    name: RHOAI Prometheus
+    type: prometheus
+    url: 'https://data-science-monitoringstack-prometheus.redhat-ods-monitoring.svc.cluster.local:9090'
+  instanceSelector:
+    matchLabels:
+      app.kubernetes.io/instance: grafana

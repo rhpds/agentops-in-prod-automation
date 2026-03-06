@@ -1,0 +1,16 @@
+apiVersion: v2
+name: mortgage-ai
+description: Multi-agent loan origination system - Red Hat AI Quickstart
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - mortgage-ai
+  - red-hat-ai
+  - quickstart
+home: https://github.com/rh-ai-quickstart/mortgage-ai
+sources:
+  - https://github.com/rh-ai-quickstart/mortgage-ai
+maintainers:
+  - name: Red Hat AI Quickstart Team
+    email: dev@example.com

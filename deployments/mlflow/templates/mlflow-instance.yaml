@@ -1,0 +1,17 @@
+apiVersion: mlflow.opendatahub.io/v1
+kind: MLflow
+metadata:
+  name: {{ .Values.mlflow.name }}
+spec:
+  storage:
+    accessModes:
+      {{- toYaml .Values.mlflow.storage.accessModes | nindent 6 }}
+    resources:
+      requests:
+        storage: {{ .Values.mlflow.storage.size }}
+  backendStoreUri: {{ .Values.mlflow.backend.storeUri | quote }}
+  artifactsDestination: {{ .Values.mlflow.artifacts.destination | quote }}
+  serveArtifacts: {{ .Values.mlflow.artifacts.serve }}
+  image:
+    imagePullPolicy: {{ .Values.mlflow.image.pullPolicy }}
+    image: quay.io/opendatahub/mlflow:odh-stable

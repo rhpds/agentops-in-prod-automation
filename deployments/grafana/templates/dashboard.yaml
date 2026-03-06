@@ -1,0 +1,804 @@
+---
+# Mortgage-AI Backend Metrics Dashboard
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: mortgage-ai-backend
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  instanceSelector:
+    matchLabels:
+      app.kubernetes.io/instance: grafana
+  json: |-
+    {
+      "title": "Mortgage-AI Backend Metrics",
+      "uid": "mortgage-ai-backend",
+      "tags": ["mortgage-ai", "fastapi", "backend", "agentops"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "time": {
+        "from": "now-1h",
+        "to": "now"
+      },
+      "refresh": "30s",
+      "templating": {
+        "list": [
+          {
+            "current": {
+              "selected": true,
+              "text": "Prometheus",
+              "value": "Prometheus"
+            },
+            "hide": 0,
+            "includeAll": false,
+            "label": "Datasource",
+            "multi": false,
+            "name": "DS_PROMETHEUS",
+            "options": [],
+            "query": "prometheus",
+            "refresh": 1,
+            "type": "datasource"
+          },
+          {
+            "current": {
+              "selected": true,
+              "text": "mortgage-ai",
+              "value": "mortgage-ai"
+            },
+            "hide": 2,
+            "label": "Namespace",
+            "name": "namespace",
+            "options": [
+              {
+                "selected": true,
+                "text": "mortgage-ai",
+                "value": "mortgage-ai"
+              }
+            ],
+            "query": "mortgage-ai",
+            "type": "constant"
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1,
+          "type": "row",
+          "title": "Overview",
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+          "collapsed": false
+        },
+        {
+          "id": 2,
+          "type": "stat",
+          "title": "Total Requests (Last Hour)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 0, "y": 1},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(increase(http_requests_total{namespace=~\"$namespace\"}[1h]))",
+              "legendFormat": "Requests"
+            }
+          ],
+          "options": {
+            "graphMode": "area",
+            "colorMode": "value"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 1000},
+                  {"color": "red", "value": 5000}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 3,
+          "type": "stat",
+          "title": "Request Rate (req/s)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 6, "y": 1},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(rate(http_requests_total{namespace=~\"$namespace\"}[5m]))",
+              "legendFormat": "Rate"
+            }
+          ],
+          "options": {
+            "graphMode": "area",
+            "colorMode": "value"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "decimals": 2,
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 10},
+                  {"color": "red", "value": 50}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 4,
+          "type": "stat",
+          "title": "Error Rate (%)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 12, "y": 1},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "(sum(rate(http_requests_total{namespace=~\"$namespace\", status=~\"5..\"}[5m])) / sum(rate(http_requests_total{namespace=~\"$namespace\"}[5m])) * 100) or vector(0)",
+              "legendFormat": "Error %"
+            }
+          ],
+          "options": {
+            "graphMode": "area",
+            "colorMode": "value"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "decimals": 2,
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 1},
+                  {"color": "red", "value": 5}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 5,
+          "type": "stat",
+          "title": "P95 Latency",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 18, "y": 1},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le))",
+              "legendFormat": "P95"
+            }
+          ],
+          "options": {
+            "graphMode": "area",
+            "colorMode": "value"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "decimals": 3,
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 1},
+                  {"color": "orange", "value": 5},
+                  {"color": "red", "value": 10}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 6,
+          "type": "timeseries",
+          "title": "Request Rate by Endpoint",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 5},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(rate(http_requests_total{namespace=~\"$namespace\"}[1m])) by (handler)",
+              "legendFormat": "{{ "{{" }}handler{{ "}}" }}"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 10,
+                "stacking": {"mode": "normal"}
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "calcs": ["last", "mean"]
+            }
+          }
+        },
+        {
+          "id": 7,
+          "type": "timeseries",
+          "title": "Response Time Percentiles",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 5},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le))",
+              "legendFormat": "P50"
+            },
+            {
+              "refId": "B",
+              "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le))",
+              "legendFormat": "P95"
+            },
+            {
+              "refId": "C",
+              "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le))",
+              "legendFormat": "P99"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 0
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
+          }
+        },
+        {
+          "id": 8,
+          "type": "timeseries",
+          "title": "HTTP Status Distribution",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 13},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(rate(http_requests_total{namespace=~\"$namespace\"}[1m])) by (status)",
+              "legendFormat": "{{ "{{" }}status{{ "}}" }}"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": {
+                "drawStyle": "bars",
+                "fillOpacity": 80,
+                "stacking": {"mode": "normal"}
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {"id": "byRegexp", "options": "2.."},
+                "properties": [{"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}]
+              },
+              {
+                "matcher": {"id": "byRegexp", "options": "4.."},
+                "properties": [{"id": "color", "value": {"fixedColor": "yellow", "mode": "fixed"}}]
+              },
+              {
+                "matcher": {"id": "byRegexp", "options": "5.."},
+                "properties": [{"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right"
+            }
+          }
+        },
+        {
+          "id": 9,
+          "type": "timeseries",
+          "title": "Response Time by Endpoint (P95)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 13},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le, handler))",
+              "legendFormat": "{{ "{{" }}handler{{ "}}" }}"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 0
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "calcs": ["last", "mean", "max"]
+            }
+          }
+        },
+        {
+          "id": 10,
+          "type": "row",
+          "title": "AI Agent Metrics",
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 21},
+          "collapsed": false
+        },
+        {
+          "id": 11,
+          "type": "stat",
+          "title": "Active Chat Sessions",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 0, "y": 22},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(active_chat_sessions{namespace=~\"$namespace\"}) or vector(0)",
+              "legendFormat": "Sessions"
+            }
+          ],
+          "options": {
+            "graphMode": "area",
+            "colorMode": "value"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 10},
+                  {"color": "red", "value": 50}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 12,
+          "type": "stat",
+          "title": "Total LLM Tokens (1h)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 6, "y": 22},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(increase(llm_tokens_total{namespace=~\"$namespace\"}[1h])) or vector(0)",
+              "legendFormat": "Tokens"
+            }
+          ],
+          "options": {
+            "graphMode": "area",
+            "colorMode": "value"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 100000},
+                  {"color": "red", "value": 500000}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 13,
+          "type": "stat",
+          "title": "Tool Call Success Rate",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 12, "y": 22},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "(sum(tool_calls_total{namespace=~\"$namespace\", status=\"success\"}) / sum(tool_calls_total{namespace=~\"$namespace\"}) * 100) or vector(100)",
+              "legendFormat": "Success %"
+            }
+          ],
+          "options": {
+            "graphMode": "area",
+            "colorMode": "value"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "decimals": 1,
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "red", "value": null},
+                  {"color": "yellow", "value": 90},
+                  {"color": "green", "value": 99}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 14,
+          "type": "stat",
+          "title": "Avg LLM Latency",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 18, "y": 22},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.50, sum(rate(llm_inference_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le)) or vector(0)",
+              "legendFormat": "P50"
+            }
+          ],
+          "options": {
+            "graphMode": "area",
+            "colorMode": "value"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "decimals": 2,
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 5},
+                  {"color": "orange", "value": 15},
+                  {"color": "red", "value": 30}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 15,
+          "type": "timeseries",
+          "title": "LLM Token Usage by Model",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 26},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(rate(llm_tokens_total{namespace=~\"$namespace\"}[5m])) by (model, direction)",
+              "legendFormat": "{{ "{{" }}model{{ "}}" }} ({{ "{{" }}direction{{ "}}" }})"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 20,
+                "stacking": {"mode": "normal"}
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "calcs": ["last", "sum"]
+            }
+          }
+        },
+        {
+          "id": 16,
+          "type": "timeseries",
+          "title": "LLM Inference Latency by Persona",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 26},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.95, sum(rate(llm_inference_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le, persona))",
+              "legendFormat": "{{ "{{" }}persona{{ "}}" }} (P95)"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 0
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "calcs": ["last", "mean", "max"]
+            }
+          }
+        },
+        {
+          "id": 17,
+          "type": "piechart",
+          "title": "Agent Routing Distribution",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 8, "w": 8, "x": 0, "y": 34},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(agent_routing_total{namespace=~\"$namespace\"}) by (complexity)",
+              "legendFormat": "{{ "{{" }}complexity{{ "}}" }}"
+            }
+          ],
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "values": ["value", "percent"]
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": ["lastNotNull"],
+              "fields": "",
+              "values": false
+            }
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"}
+            },
+            "overrides": [
+              {
+                "matcher": {"id": "byName", "options": "simple"},
+                "properties": [{"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}]
+              },
+              {
+                "matcher": {"id": "byName", "options": "complex"},
+                "properties": [{"id": "color", "value": {"fixedColor": "blue", "mode": "fixed"}}]
+              }
+            ]
+          }
+        },
+        {
+          "id": 18,
+          "type": "timeseries",
+          "title": "Tool Calls by Status",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 8, "w": 8, "x": 8, "y": 34},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(rate(tool_calls_total{namespace=~\"$namespace\"}[5m])) by (status)",
+              "legendFormat": "{{ "{{" }}status{{ "}}" }}"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 30
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {"id": "byName", "options": "success"},
+                "properties": [{"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}]
+              },
+              {
+                "matcher": {"id": "byName", "options": "error"},
+                "properties": [{"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
+          }
+        },
+        {
+          "id": 19,
+          "type": "timeseries",
+          "title": "Active Sessions by Persona",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 8, "w": 8, "x": 16, "y": 34},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(active_chat_sessions{namespace=~\"$namespace\"}) by (persona)",
+              "legendFormat": "{{ "{{" }}persona{{ "}}" }}"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "stepAfter",
+                "fillOpacity": 50
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "calcs": ["last"]
+            }
+          }
+        },
+        {
+          "id": 20,
+          "type": "table",
+          "title": "Endpoint Performance Summary",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {"h": 8, "w": 24, "x": 0, "y": 42},
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(rate(http_requests_total{namespace=~\"$namespace\"}[5m])) by (handler)",
+              "legendFormat": "{{ "{{" }}handler{{ "}}" }}",
+              "format": "table",
+              "instant": true
+            },
+            {
+              "refId": "B",
+              "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le, handler))",
+              "legendFormat": "{{ "{{" }}handler{{ "}}" }}",
+              "format": "table",
+              "instant": true
+            },
+            {
+              "refId": "C",
+              "expr": "(sum(rate(http_requests_total{namespace=~\"$namespace\", status=~\"5..\"}[5m])) by (handler) / sum(rate(http_requests_total{namespace=~\"$namespace\"}[5m])) by (handler) * 100) or on(handler) (sum(rate(http_requests_total{namespace=~\"$namespace\"}[5m])) by (handler) * 0)",
+              "legendFormat": "{{ "{{" }}handler{{ "}}" }}",
+              "format": "table",
+              "instant": true
+            }
+          ],
+          "transformations": [
+            {"id": "merge", "options": {}},
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {"Time": true},
+                "renameByName": {
+                  "handler": "Endpoint",
+                  "Value #A": "Req/sec",
+                  "Value #B": "P95 Latency (s)",
+                  "Value #C": "Error Rate (%)"
+                }
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "custom": {"align": "left", "filterable": true}
+            },
+            "overrides": [
+              {
+                "matcher": {"id": "byName", "options": "Req/sec"},
+                "properties": [
+                  {"id": "unit", "value": "reqps"},
+                  {"id": "decimals", "value": 2}
+                ]
+              },
+              {
+                "matcher": {"id": "byName", "options": "P95 Latency (s)"},
+                "properties": [
+                  {"id": "unit", "value": "s"},
+                  {"id": "decimals", "value": 3},
+                  {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 1}, {"color": "red", "value": 5}]}},
+                  {"id": "custom.cellOptions", "value": {"type": "color-background"}}
+                ]
+              },
+              {
+                "matcher": {"id": "byName", "options": "Error Rate (%)"},
+                "properties": [
+                  {"id": "unit", "value": "percent"},
+                  {"id": "decimals", "value": 1},
+                  {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 1}, {"color": "red", "value": 5}]}},
+                  {"id": "custom.cellOptions", "value": {"type": "color-background"}}
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }

@@ -1,0 +1,19 @@
+# MLflow instance configuration
+
+mlflow:
+  name: mlflow
+
+  storage:
+    accessModes:
+      - ReadWriteOnce
+    size: 100Gi
+
+  backend:
+    storeUri: "sqlite:////mlflow/mlflow.db"
+
+  artifacts:
+    destination: "file:///mlflow/artifacts"
+    serve: true
+
+  image:
+    pullPolicy: Always

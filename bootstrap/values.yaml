@@ -1,0 +1,19 @@
+# Default values for bootstrap chart
+# This chart creates the bootstrap Application (app-of-apps parent)
+
+bootstrap:
+  # Git repository URL
+  repoURL: https://github.com/rhpds/agentops-in-prod-automation
+  # Branch or tag to use
+  targetRevision: main
+
+user:
+  count: 1
+  prefix: user
+
+slackMcpSecret:
+  slackBotToken: "xoxb-your-token"
+  
+deployer:
+  apiUrl: https://api.cluster-guid.sandbox.opentlc.com:6443
+  domain: apps.cluster-guid.sandbox.opentlc.com
