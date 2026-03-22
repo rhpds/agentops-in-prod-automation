@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+description: A little Helm chart for Data Science Pipeline Application 🐈
+name: dspa
+version: 1.0.0
+home: https://github.com/rhpds/agentops-in-prod-automation
+icon: https://cdn-icons-png.flaticon.com/512/16990/16990376.png 
+maintainers:
+  - name: rcarrata

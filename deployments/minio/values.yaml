@@ -1,0 +1,7 @@
+---
+buckets:
+  - name: pipeline
+  - name: models
+  - name: test-results
+  # - name: data # for feast
+

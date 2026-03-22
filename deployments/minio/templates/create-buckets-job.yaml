@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: minio-manage
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: minio-manage-rb
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- kind: ServiceAccount
+  name: minio-manage
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-buckets
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      serviceAccount: minio-manage
+      serviceAccountName: minio-manage
+      restartPolicy: Never
+      containers:
+      - name: create-buckets
+        image: image-registry.openshift-image-registry.svc:5000/openshift/tools:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/bash
+        - -c
+        - |
+          echo -n "Waiting for minio pod in {{ .Release.Namespace }} namespace"
+          oc -n {{ .Release.Namespace }} wait pod -l app=minio --for=condition=Ready --timeout=180s
+          echo "Minio pod is running in {{ .Release.Namespace }} namespace"
+          {{ range $bucket := .Values.buckets }}
+          oc rsh `oc get pod -l app=minio -o name` mkdir /data/{{ .name }}
+          echo "🍒{{ $bucket.name }} bucket is created."
+          {{- end }}
