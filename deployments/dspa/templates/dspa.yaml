@@ -28,7 +28,7 @@ spec:
     externalStorage:
       basePath: ''
       bucket: pipeline
-      host: 'minio-service.{{ $.Release.Namespace }}.svc.cluster.local:9000'
+      host: '{{ .Values.minioService | default "minio-service" }}.{{ $.Release.Namespace }}.svc.cluster.local:9000'
       port: ''
       region: wonderland
       s3CredentialsSecret:
