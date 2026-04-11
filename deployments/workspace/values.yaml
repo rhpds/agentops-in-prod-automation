@@ -1,0 +1,25 @@
+# Default values for workspace.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+username: user1
+namespacePrefix: wksp
+
+deployer:
+  domain: apps.cluster.example.com
+
+devworkspacetemplate:
+  name: che-code-exercises
+  devfile: http://devspaces-dashboard.openshift-devspaces.svc.cluster.local:8080/dashboard/api/editors/devfile?che-editor=che-incubator/che-code/latest
+  codeImage: registry.redhat.io/devspaces/code-rhel9@sha256:7b68bf06abf4f2b948d21ffa82401b44f26965b093e4875653344ae2b7fe46c8
+
+devworkspace:
+  name: exercises
+  projects:
+    repoUrl: https://github.com/taylorjordanNC/coding-exercises
+    revision: main
+  components:
+    - name: universal-developer-image
+      container:
+        image: registry.redhat.io/devspaces/udi-rhel9:3.21
+        sourceMapping: /projects
