@@ -1,0 +1,22 @@
+dataScienceCluster:
+  components:
+    llamastackoperator:
+      managementState: Managed
+    trainingoperator:
+      managementState: Removed
+    mlflowoperator:
+      managementState: Managed
+
+dataScienceClusterInitialization: null
+
+dashboardConfig:
+  disableModelRegistry: false
+  disableModelCatalog: false
+  disableKServeMetrics: false
+  genAiStudio: true
+  modelAsService: true
+  disableLMEval: false
+
+modelServerSizes: null
+
+notebookSizes: null

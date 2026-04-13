@@ -8,6 +8,12 @@ namespacePrefix: wksp
 deployer:
   domain: apps.cluster.example.com
 
+remotellm:
+  enabled: false
+  apiToken: ""
+  url: ""
+  id: ""
+
 devworkspacetemplate:
   name: che-code-exercises
   devfile: http://devspaces-dashboard.openshift-devspaces.svc.cluster.local:8080/dashboard/api/editors/devfile?che-editor=che-incubator/che-code/latest

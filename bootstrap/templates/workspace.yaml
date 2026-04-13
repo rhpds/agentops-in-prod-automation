@@ -29,6 +29,11 @@ spec:
             username: {{ `{{ user }}` }}
             deployer:
               domain: {{ .Values.deployer.domain }}
+            remotellm:
+              enabled: {{ .Values.remotellm.enabled }}
+              apiToken: "{{ .Values.remotellm.apiToken }}"
+              url: "{{ .Values.remotellm.url }}"
+              id: "{{ .Values.remotellm.id }}"
       destination:
         name: in-cluster
       syncPolicy:

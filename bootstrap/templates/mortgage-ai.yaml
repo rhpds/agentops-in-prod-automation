@@ -30,14 +30,14 @@ spec:
               S3_ENDPOINT: "http://minio-service:9000"
               S3_ACCESS_KEY: "wksp"
               S3_SECRET_KEY: "thisisthepassword"
-              LLM_BASE_URL: "https://litellm-prod.apps.maas.redhatworkshops.io/v1"
-              LLM_API_KEY: "XXX"
-              LLM_MODEL: "gpt-oss-120b"
+              LLM_BASE_URL: "{{ .Values.remotellm.url }}"
+              LLM_API_KEY: "{{ .Values.remotellm.apiToken }}"
+              LLM_MODEL: "{{ .Values.remotellm.id }}"
               COMPANY_NAME: "Fed Aura Capital"
               MLFLOW_TRACKING_URI: "https://mlflow.redhat-ods-applications.svc.cluster.local:8443"
               MLFLOW_TRACKING_AUTH: "kubernetes"
               MLFLOW_EXPERIMENT_NAME: "mortgage-ai"
-              MLFLOW_WORKSPACE: "mortgage-ai"
+              MLFLOW_WORKSPACE: "wksp-{{ `{{ user }}` }}"
               MLFLOW_TRACKING_INSECURE_TLS: "true"
             minio:
               enabled: false
