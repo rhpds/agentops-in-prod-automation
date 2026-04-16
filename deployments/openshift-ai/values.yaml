@@ -6,6 +6,8 @@ dataScienceCluster:
       managementState: Removed
     mlflowoperator:
       managementState: Managed
+    aipipelines:
+      managementState: Managed    
 
 dataScienceClusterInitialization: null
 
