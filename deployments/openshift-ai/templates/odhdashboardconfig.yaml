@@ -1,0 +1,33 @@
+---
+apiVersion: opendatahub.io/v1alpha
+kind: OdhDashboardConfig
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  labels:
+    app.kubernetes.io/part-of: rhods-dashboard
+    app.opendatahub.io/rhods-dashboard: "true"
+  name: odh-dashboard-config
+  namespace: redhat-ods-applications
+spec:
+  {{- with .Values.dashboardConfig }}
+  dashboardConfig:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  groupsConfig:
+    adminGroups: rhods-admins
+    allowedGroups: {{ join "," .Values.userGroups }}
+  {{- with .Values.modelServerSizes }}
+  modelServerSizes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.notebookSizes }}
+  notebookSizes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  notebookController:
+    enabled: {{ .Values.showJupyterInEnabledApplications }}
+    notebookNamespace: rhods-notebooks
+    pvcSize: {{ .Values.defaultWorkbenchPvcSize }}
+  templateDisablement: []
+  templateOrder: []

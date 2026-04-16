@@ -1,15 +1,50 @@
+---
+enableUserTelemetry: false
+
+dashboardReplicas: 1
+operatorReplicas: 1
+
 dataScienceCluster:
+  create: true
+  version: v1
   components:
-    llamastackoperator:
+    kserve:
+      managementState: Managed
+      nim:
+        managementState: Managed
+      rawDeploymentServiceConfig: Headed
+    modelregistry:
+      managementState: Managed
+      registriesNamespace: rhoai-model-registries
+    trustyai:
+      managementState: Managed
+    ray:
+      managementState: Removed
+    kueue:
+      managementState: Removed
+    workbenches:
+      managementState: Managed
+      workbenchNamespace: rhods-notebooks
+    dashboard:
       managementState: Managed
     trainingoperator:
       managementState: Removed
+    feastoperator: {}
+    llamastackoperator:
+      managementState: Managed
     mlflowoperator:
       managementState: Managed
     aipipelines:
-      managementState: Managed    
+      managementState: Managed
 
 dataScienceClusterInitialization: null
+
+acceleratorProfiles: []
+hardwareProfiles: []
+
+admins: []
+userGroups:
+  - system:authenticated
 
 dashboardConfig:
   disableModelRegistry: false
@@ -18,6 +53,12 @@ dashboardConfig:
   genAiStudio: true
   modelAsService: true
   disableLMEval: false
+
+defaultWorkbenchPvcSize: 20Gi
+showJupyterInEnabledApplications: true
+notebookIdleCulling:
+  enabled: true
+  timeoutInMinutes: 240
 
 modelServerSizes: null
 
