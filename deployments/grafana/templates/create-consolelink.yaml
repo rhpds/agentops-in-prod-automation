@@ -24,6 +24,11 @@ spec:
         image: image-registry.openshift-image-registry.svc:5000/openshift/tools:latest
         imagePullPolicy: IfNotPresent
         command: ["/mnt/create-consolelink.sh"]
+        env:
+        - name: NAMESPACE
+          value: {{ .Release.Namespace }}
+        - name: USERNAME
+          value: {{ .Values.username }}
         volumeMounts:
           - name: create-consolelink-script
             mountPath: /mnt

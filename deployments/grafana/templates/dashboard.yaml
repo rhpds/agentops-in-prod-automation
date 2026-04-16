@@ -44,21 +44,21 @@ spec:
           {
             "current": {
               "selected": true,
-              "text": "All",
-              "value": "$__all"
+              "text": "{{ .Release.Namespace }}",
+              "value": "{{ .Release.Namespace }}"
             },
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "hide": 0,
-            "includeAll": true,
+            "hide": 2,
             "label": "Namespace",
-            "multi": true,
             "name": "namespace",
-            "query": "label_values(kube_namespace_labels{namespace=~\"{{ .Values.namespacePrefix }}-.*\"}, namespace)",
-            "refresh": 2,
-            "type": "query"
+            "options": [
+              {
+                "selected": true,
+                "text": "{{ .Release.Namespace }}",
+                "value": "{{ .Release.Namespace }}"
+              }
+            ],
+            "query": "{{ .Release.Namespace }}",
+            "type": "constant"
           }
         ]
       },

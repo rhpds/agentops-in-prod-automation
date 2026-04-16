@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: mortgage-ai-grafana-proxy-{{ .Release.Namespace }}
+  name: grafana-proxy-{{ .Release.Namespace }}
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 rules:
@@ -22,14 +22,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: mortgage-ai-grafana-proxy
-  namespace: {{ .Release.Namespace }}
+  name: grafana-proxy
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: mortgage-ai-grafana-proxy-{{ .Release.Namespace }}
+  name: grafana-proxy-{{ .Release.Namespace }}
 subjects:
   - kind: ServiceAccount
     name: grafana-sa
@@ -38,8 +37,7 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: mortgage-ai-grafana-application-monitoring
-  namespace: {{ .Release.Namespace }}
+  name: grafana-application-monitoring
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 roleRef:
@@ -52,11 +50,10 @@ subjects:
   namespace: {{ .Release.Namespace }}
 ---
 # ClusterRoleBinding to allow Grafana SA to access UWM Prometheus (thanos-querier)
-# This enables querying user-workload metrics from all namespaces
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: mortgage-ai-grafana-uwm-access-{{ .Release.Namespace }}
+  name: grafana-uwm-access-{{ .Release.Namespace }}
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 roleRef:
@@ -68,14 +65,11 @@ subjects:
   name: grafana-sa
   namespace: {{ .Release.Namespace }}
 ---
-# RoleBinding in each user workspace to allow Grafana to query metrics from the application
-{{- range $index := until (int .Values.user.count) }}
----
+# RoleBinding to allow Grafana to query metrics from this namespace
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: grafana-metrics-view
-  namespace: {{ $.Values.namespacePrefix }}-{{ $.Values.user.prefix }}{{ add $index 1 }}
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 roleRef:
@@ -85,5 +79,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: grafana-sa
-  namespace: {{ $.Release.Namespace }}
-{{- end }}
+  namespace: {{ .Release.Namespace }}
