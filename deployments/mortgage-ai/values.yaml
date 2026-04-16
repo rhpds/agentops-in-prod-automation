@@ -108,7 +108,7 @@ api:
   name: mortgage-ai-api
   image:
     repository: mortgage-ai-api
-    tag: latest
+    tag: ""
   service:
     type: ClusterIP
     port: 8000
