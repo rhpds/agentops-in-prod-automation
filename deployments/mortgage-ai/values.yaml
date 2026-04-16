@@ -118,8 +118,8 @@ api:
       memory: "1Gi"
       cpu: "200m"
     limits:
-      memory: "2Gi"
-      cpu: "1000m"
+      memory: "4Gi"
+      cpu: "2000m"
   healthCheck:
     enabled: true
     path: /health/
