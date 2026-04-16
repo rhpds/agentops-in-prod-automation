@@ -44,21 +44,21 @@ spec:
           {
             "current": {
               "selected": true,
-              "text": "mortgage-ai",
-              "value": "mortgage-ai"
+              "text": "All",
+              "value": "$__all"
             },
-            "hide": 2,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_PROMETHEUS}"
+            },
+            "hide": 0,
+            "includeAll": true,
             "label": "Namespace",
+            "multi": true,
             "name": "namespace",
-            "options": [
-              {
-                "selected": true,
-                "text": "mortgage-ai",
-                "value": "mortgage-ai"
-              }
-            ],
-            "query": "mortgage-ai",
-            "type": "constant"
+            "query": "label_values(kube_namespace_labels{namespace=~\"{{ .Values.namespacePrefix }}-.*\"}, namespace)",
+            "refresh": 2,
+            "type": "query"
           }
         ]
       },

@@ -1,2 +1,7 @@
 channel: v5
 sessionSecret: ""
+
+user:
+  count: 1
+  prefix: user
+namespacePrefix: wksp
