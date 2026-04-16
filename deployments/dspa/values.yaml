@@ -1,3 +1,4 @@
 ---
-buckets:
-  - name: pipeline
+# MinIO connection is managed by the standalone minio chart
+# DSPA references the 'pipeline' secret created there
+minioService: minio-service
