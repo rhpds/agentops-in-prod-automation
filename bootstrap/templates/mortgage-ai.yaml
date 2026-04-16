@@ -30,6 +30,8 @@ spec:
               S3_ENDPOINT: "http://minio-service:9000"
               S3_ACCESS_KEY: "wksp"
               S3_SECRET_KEY: "thisisthepassword"
+              MINIO_ROOT_USER: "wksp"
+              MINIO_ROOT_PASSWORD: "thisisthepassword"
               LLM_BASE_URL: "{{ .Values.remotellm.url }}"
               LLM_API_KEY: "{{ .Values.remotellm.apiToken }}"
               LLM_MODEL: "{{ .Values.remotellm.id }}"
@@ -40,7 +42,8 @@ spec:
               MLFLOW_WORKSPACE: "wksp-{{ `{{ user }}` }}"
               MLFLOW_TRACKING_INSECURE_TLS: "true"
             minio:
-              enabled: false
+              enabled: true
+              name: minio-service
             keycloak:
               enabled: false
             seed:
