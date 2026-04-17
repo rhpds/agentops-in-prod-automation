@@ -47,6 +47,9 @@ spec:
               enabled: false
             seed:
               enabled: true
+            ui:
+              image:
+                tag: "0.1.9"
             mlflow:
               rbac:
                 enabled: true

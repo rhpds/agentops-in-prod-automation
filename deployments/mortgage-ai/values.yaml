@@ -132,7 +132,7 @@ ui:
   name: mortgage-ai-ui
   image:
     repository: mortgage-ai-ui
-    tag: latest
+    tag: "0.1.9"
   service:
     type: ClusterIP
     port: 8080
