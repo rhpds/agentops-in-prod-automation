@@ -143,5 +143,5 @@ roleRef:
   name: cluster-logging-application-view
 subjects:
 - apiGroup: rbac.authorization.k8s.io
-  kind: User
-  name: {{ .Values.username }}
+  kind: Group
+  name: system:authenticated:oauth
