@@ -15,6 +15,12 @@ spec:
     path: deployments/openshift-ai
     repoURL: {{ .Values.bootstrap.repoURL }}
     targetRevision: {{ .Values.bootstrap.targetRevision }}
+    helm:
+      valuesObject:
+        admins:
+          {{- range $i := until (int .Values.user.count) }}
+          - "{{ $.Values.user.prefix }}{{ add $i 1 }}"
+          {{- end }}
   ignoreDifferences:
     - group: datasciencecluster.opendatahub.io
       kind: DataScienceCluster
