@@ -18,6 +18,7 @@ spec:
     helm:
       valuesObject:
         admins:
+          - "{{ .Values.user.prefix }}"
           {{- range $i := until (int .Values.user.count) }}
           - "{{ $.Values.user.prefix }}{{ add $i 1 }}"
           {{- end }}
