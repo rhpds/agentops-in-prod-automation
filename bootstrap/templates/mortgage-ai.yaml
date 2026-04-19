@@ -53,6 +53,8 @@ spec:
             mlflow:
               rbac:
                 enabled: true
+                pipelineRunner:
+                  enabled: true
       destination:
         name: in-cluster
         namespace: wksp-{{ `{{ user }}` }}
