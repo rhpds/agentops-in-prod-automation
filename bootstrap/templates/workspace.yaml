@@ -27,6 +27,7 @@ spec:
         helm:
           values: |
             username: {{ `{{ user }}` }}
+            userPrefix: {{ .Values.user.prefix }}
             deployer:
               domain: {{ .Values.deployer.domain }}
             remotellm:

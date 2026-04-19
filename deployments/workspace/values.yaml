@@ -3,6 +3,7 @@
 # Declare variables to be passed into your templates.
 
 username: user1
+userPrefix: user
 namespacePrefix: wksp
 
 deployer:

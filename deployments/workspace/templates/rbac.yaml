@@ -12,6 +12,22 @@ subjects:
 - apiGroup: rbac.authorization.k8s.io
   kind: User
   name: {{ .Values.username }}
+{{- if ne .Values.userPrefix .Values.username }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: wksp-admin-{{ .Values.userPrefix }}
+  namespace: {{ .Values.namespacePrefix }}-{{ .Values.username }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: {{ .Values.userPrefix }}
+{{- end }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -26,3 +42,19 @@ subjects:
 - apiGroup: rbac.authorization.k8s.io
   kind: User
   name: {{ .Values.username }}
+{{- if ne .Values.userPrefix .Values.username }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: view-application-logs-{{ .Values.userPrefix }}
+  namespace: {{ .Values.namespacePrefix }}-{{ .Values.username }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-logging-application-view
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: {{ .Values.userPrefix }}
+{{- end }}
