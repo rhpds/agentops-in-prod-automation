@@ -15,7 +15,7 @@ spec:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   groupsConfig:
-    adminGroups: rhods-admins
+    adminGroups: system:authenticated
     allowedGroups: {{ join "," .Values.userGroups }}
   {{- with .Values.modelServerSizes }}
   modelServerSizes:
