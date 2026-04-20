@@ -1,0 +1,19 @@
+# Images to pre-pull on every node
+images:
+  - name: ds-notebook
+    image: image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/s2i-generic-data-science-notebook:3.4
+
+# Minimal resources — containers only run sleep
+resources:
+  requests:
+    cpu: 1m
+    memory: 64Mi
+  limits:
+    cpu: 10m
+    memory: 128Mi
+
+# Run on all nodes including tainted infra/GPU nodes
+tolerations:
+  - operator: Exists
+
+nodeSelector: {}
