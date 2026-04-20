@@ -1,0 +1,135 @@
+{{- if .Values.mlflow.rbac.enabled }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "mortgage-ai.fullname" . }}-postsync
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "mortgage-ai.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "mortgage-ai.fullname" . }}-postsync
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "mortgage-ai.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "mortgage-ai.fullname" . }}-postsync
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "mortgage-ai.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "mortgage-ai.fullname" . }}-postsync
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "mortgage-ai.fullname" . }}-postsync
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "mortgage-ai.fullname" . }}-postsync-restart
+  labels:
+    {{- include "mortgage-ai.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postsync
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        {{- include "mortgage-ai.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: postsync
+    spec:
+      serviceAccountName: {{ include "mortgage-ai.fullname" . }}-postsync
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      restartPolicy: OnFailure
+      containers:
+        - name: restart-api
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: registry.redhat.io/openshift4/ose-cli:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+            - -c
+            - |
+              echo "=== PostSync: Waiting for MLflow ==="
+              if [ -z "$MLFLOW_TRACKING_URI" ]; then
+                echo "MLFLOW_TRACKING_URI is empty, skipping MLflow wait"
+              else
+                MLFLOW_URL="${MLFLOW_TRACKING_URI}/ping"
+                MLFLOW_READY=false
+                for i in $(seq 1 60); do
+                  STATUS=$(curl -sk -o /dev/null -w "%{http_code}" "$MLFLOW_URL" 2>/dev/null)
+                  if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 500 ]; then
+                    echo "MLflow is responding (HTTP $STATUS)"
+                    MLFLOW_READY=true
+                    break
+                  fi
+                  echo "Attempt $i/60: MLflow not ready (HTTP $STATUS), waiting 10s..."
+                  sleep 10
+                done
+                if [ "$MLFLOW_READY" = "false" ]; then
+                  echo "WARNING: MLflow not ready after 10 minutes, proceeding with restart anyway"
+                fi
+              fi
+
+              echo "=== PostSync: Deleting mortgage-ai-api pod ==="
+              oc delete pod -l app.kubernetes.io/component=api,app.kubernetes.io/name={{ include "mortgage-ai.name" . }} -n "$NAMESPACE" || {
+                echo "ERROR: Failed to delete API pod"
+                exit 1
+              }
+
+              echo "=== PostSync: Waiting for new API pod ==="
+              oc rollout status deployment/{{ .Values.api.name }} -n "$NAMESPACE" --timeout=300s || {
+                echo "ERROR: Rollout did not complete within timeout"
+                exit 1
+              }
+
+              echo "=== PostSync: Complete ==="
+          env:
+            - name: MLFLOW_TRACKING_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mortgage-ai.fullname" . }}-secret
+                  key: MLFLOW_TRACKING_URI
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+{{- end }}
