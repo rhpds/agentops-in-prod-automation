@@ -537,7 +537,7 @@ spec:
           "targets": [
             {
               "refId": "A",
-              "expr": "sum(rate(llm_tokens_total{namespace=~\"$namespace\"}[5m])) by (model, direction)",
+              "expr": "sum(llm_tokens_total{namespace=~\"$namespace\"}) by (model, direction)",
               "legendFormat": "{{ "{{" }}model{{ "}}" }} ({{ "{{" }}direction{{ "}}" }})"
             }
           ],
@@ -573,8 +573,8 @@ spec:
           "targets": [
             {
               "refId": "A",
-              "expr": "histogram_quantile(0.95, sum(rate(llm_inference_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le, persona))",
-              "legendFormat": "{{ "{{" }}persona{{ "}}" }} (P95)"
+              "expr": "(sum(llm_inference_duration_seconds_sum{namespace=~\"$namespace\"}) by (persona) / sum(llm_inference_duration_seconds_count{namespace=~\"$namespace\"}) by (persona))",
+              "legendFormat": "{{ "{{" }}persona{{ "}}" }} (Avg)"
             }
           ],
           "fieldConfig": {
