@@ -420,7 +420,7 @@ spec:
         {
           "id": 12,
           "type": "stat",
-          "title": "Total LLM Tokens (1h)",
+          "title": "Total LLM Tokens",
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
@@ -429,7 +429,7 @@ spec:
           "targets": [
             {
               "refId": "A",
-              "expr": "sum(increase(llm_tokens_total{namespace=~\"$namespace\"}[1h])) or vector(0)",
+              "expr": "sum(llm_tokens_total{namespace=~\"$namespace\"}) or vector(0)",
               "legendFormat": "Tokens"
             }
           ],
@@ -500,8 +500,8 @@ spec:
           "targets": [
             {
               "refId": "A",
-              "expr": "histogram_quantile(0.50, sum(rate(llm_inference_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le)) or vector(0)",
-              "legendFormat": "P50"
+              "expr": "(sum(llm_inference_duration_seconds_sum{namespace=~\"$namespace\"}) / sum(llm_inference_duration_seconds_count{namespace=~\"$namespace\"})) or vector(0)",
+              "legendFormat": "Avg"
             }
           ],
           "options": {
