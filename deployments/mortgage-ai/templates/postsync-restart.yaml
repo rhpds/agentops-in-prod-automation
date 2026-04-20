@@ -114,6 +114,23 @@ spec:
                 exit 1
               }
 
+              echo "=== PostSync: Verifying API is serving ==="
+              API_URL="http://{{ .Values.api.name }}:{{ .Values.api.service.port }}{{ .Values.api.healthCheck.path }}"
+              API_OK=false
+              for i in $(seq 1 30); do
+                if curl -sf "$API_URL" > /dev/null 2>&1; then
+                  echo "API is healthy at $API_URL"
+                  API_OK=true
+                  break
+                fi
+                echo "Attempt $i/30: API not responding yet, waiting 5s..."
+                sleep 5
+              done
+              if [ "$API_OK" = "false" ]; then
+                echo "ERROR: API did not become healthy after restart"
+                exit 1
+              fi
+
               echo "=== PostSync: Complete ==="
           env:
             - name: MLFLOW_TRACKING_URI
