@@ -2,7 +2,7 @@
 #
 # Override patterns:
 #   External DB:        --set database.enabled=false
-#                       --set secrets.DATABASE_URL=postgresql+asyncpg://...
+#                       --set secrets.DATABASE_URL=postgresql+asyncpg://...<br>
 #   External Keycloak:  --set keycloak.enabled=false
 #                       --set secrets.KEYCLOAK_URL=https://...
 #   External MinIO/S3:  --set minio.enabled=false
@@ -123,7 +123,7 @@ api:
   healthCheck:
     enabled: true
     path: /health/
-    initialDelaySeconds: 300
+    initialDelaySeconds: 30  # API is ready in ~17s; 300s caused PostSync timeout loop on AWS EBS
     periodSeconds: 10
     failureThreshold: 20
 # UI configuration
