@@ -129,10 +129,14 @@ kind: Job
 metadata:
   name: create-bucket
   namespace: openshift-logging
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
+  backoffLimit: 5
   template:
     spec:
-      restartPolicy: Never
+      restartPolicy: OnFailure
       serviceAccount: default
       serviceAccountName: default
       containers:
@@ -150,3 +154,4 @@ spec:
                 echo "Waiting for MinIO..."; sleep 5
               done
               mc mb --ignore-existing myminio/loki
+              echo "Bucket created successfully"
