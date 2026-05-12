@@ -3,9 +3,9 @@
 
 bootstrap:
   # Git repository URL
-  repoURL: https://github.com/rhpds/agentops-in-prod-automation
+  repoURL: https://github.com/rhpds/agentops-in-prod-automation-aws
   # Branch or tag to use
-  targetRevision: fix-api-readiness-probe-aws
+  targetRevision: main
 
 user:
   count: 1
