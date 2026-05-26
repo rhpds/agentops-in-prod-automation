@@ -10,10 +10,10 @@ spec:
     name: in-cluster
     namespace: mlflow
   project: default
-  source:
-    path: deployments/mlflow
-    repoURL: {{ .Values.bootstrap.repoURL }}
-    targetRevision: {{ .Values.bootstrap.targetRevision }}
+  # source:
+  #   path: deployments/mlflow
+  #   repoURL: {{ .Values.bootstrap.repoURL }}
+  #   targetRevision: {{ .Values.bootstrap.targetRevision }}
   syncPolicy:
     automated:
       prune: true
