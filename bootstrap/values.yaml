@@ -3,9 +3,9 @@
 
 bootstrap:
   # Git repository URL
-  repoURL: https://github.com/rhpds/agentops-in-prod-automation-aws
+  repoURL: https://github.com/eformat/agentops-in-prod-automation-aws
   # Branch or tag to use
-  targetRevision: main
+  targetRevision: fix-bootstrap-sync
 
 user:
   count: 1

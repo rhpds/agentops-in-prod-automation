@@ -15,6 +15,8 @@ spec:
     metadata:
       name: mortgage-ai-{{ `{{ user }}` }}
       namespace: openshift-gitops
+      annotations:
+        argocd.argoproj.io/sync-wave: "5"
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
@@ -62,3 +64,5 @@ spec:
         automated:
           prune: true
           selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
