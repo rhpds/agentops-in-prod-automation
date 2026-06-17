@@ -4,6 +4,8 @@ kind: ApplicationSet
 metadata:
   name: workspace
   namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   generators:
     - list:
@@ -16,8 +18,6 @@ spec:
     metadata:
       name: workspace-{{ `{{ user }}` }}
       namespace: openshift-gitops
-      annotations:
-        argocd.argoproj.io/sync-wave: "1"
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
