@@ -48,8 +48,8 @@ secrets:
   # LLM
   LLM_API_KEY: "not-needed"
   LLM_BASE_URL: "http://vllm:8000/v1"
-  LLM_MODEL_FAST: "gpt-oss-120b"
-  LLM_MODEL_CAPABLE: "gpt-oss-120b"
+  LLM_MODEL_FAST: "nvidia/nemotron-3-nano"
+  LLM_MODEL_CAPABLE: "nvidia/nemotron-3-nano"
   # Embedding model -- defaults to in-process sentence-transformers.
   # Leave these empty to use the built-in local provider (no external
   # service needed). To use a remote OpenAI-compatible endpoint instead,

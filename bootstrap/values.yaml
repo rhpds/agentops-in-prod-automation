@@ -12,10 +12,10 @@ user:
   prefix: user
 
 remotellm:
-  enabled: false
+  enabled: true
   apiToken: "paste-your-token-here"
-  url: "paste-your-url-here"
-  id: "paste-your-model-id-here"
+  url: "https://nemotron-nano-3-nemo.apps.ocp.cloud.rhai-tmm.dev/v1"
+  id: "nvidia/nemotron-3-nano"
   
 deployer:
   apiUrl: https://api.cluster-guid.sandbox.opentlc.com:6443
