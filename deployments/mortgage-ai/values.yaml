@@ -123,7 +123,7 @@ api:
   healthCheck:
     enabled: true
     path: /health/
-    initialDelaySeconds: 300
+    initialDelaySeconds: 30
     periodSeconds: 10
     failureThreshold: 20
 # UI configuration

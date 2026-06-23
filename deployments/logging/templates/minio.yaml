@@ -129,22 +129,29 @@ kind: Job
 metadata:
   name: create-bucket
   namespace: openshift-logging
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
+  backoffLimit: 5
   template:
     spec:
-      restartPolicy: Never
+      restartPolicy: OnFailure
       serviceAccount: default
       serviceAccountName: default
       containers:
         - name: job
-          image: quay.io/openshift/origin-cli:latest
+          image: minio/mc:latest
           imagePullPolicy: IfNotPresent
+          env:
+            - name: MC_CONFIG_DIR
+              value: /tmp/mc-config
           command:
-            - /bin/bash
+            - /bin/sh
             - -c
             - |
-              oc -n openshift-logging wait pod --for=condition=Ready -l app=minio
-              curl -o /tmp/mc https://dl.min.io/client/mc/release/linux-amd64/mc
-              chmod +x /tmp/mc
-              /tmp/mc --config-dir /tmp/ alias set myminio http://minio-service.openshift-logging.svc.cluster.local:9000 minio IJrixDGbADAkgey5
-              /tmp/mc --config-dir /tmp/ mb myminio/loki
+              until mc alias set myminio http://minio-service.openshift-logging.svc.cluster.local:9000 minio IJrixDGbADAkgey5; do
+                echo "Waiting for MinIO..."; sleep 5
+              done
+              mc mb --ignore-existing myminio/loki
+              echo "Bucket created successfully"

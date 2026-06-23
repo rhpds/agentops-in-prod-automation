@@ -4,6 +4,8 @@ kind: ApplicationSet
 metadata:
   name: mortgage-ai
   namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
 spec:
   generators:
     - list:
@@ -32,11 +34,11 @@ spec:
               S3_SECRET_KEY: "thisisthepassword"
               LLM_BASE_URL: "{{ .Values.remotellm.url }}"
               LLM_API_KEY: "{{ .Values.remotellm.apiToken }}"
-              LLM_MODEL: "gpt-oss-120b"
-              LLM_MODEL_FAST: "gpt-oss-120b"
-              LLM_MODEL_CAPABLE: "gpt-oss-120b"
+              LLM_MODEL: "{{ .Values.remotellm.id }}"
+              LLM_MODEL_FAST: "{{ .Values.remotellm.id }}"
+              LLM_MODEL_CAPABLE: "{{ .Values.remotellm.id }}"
               COMPANY_NAME: "Fed Aura Capital"
-              MLFLOW_TRACKING_URI: "https://mlflow.redhat-ods-applications.svc.cluster.local:8443"
+              MLFLOW_TRACKING_URI: "https://mlflow.redhat-ods-applications.svc.cluster.local:8443/mlflow"
               MLFLOW_TRACKING_AUTH: "kubernetes"
               MLFLOW_EXPERIMENT_NAME: "mortgage-ai"
               MLFLOW_WORKSPACE: "wksp-{{ `{{ user }}` }}"
@@ -62,3 +64,5 @@ spec:
         automated:
           prune: true
           selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
