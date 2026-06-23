@@ -3,7 +3,6 @@ operators:
     channel: stable-3.4
     namespace: redhat-ods-operator
     installPlanApproval: Automatic
-    startingCSV: rhods-operator.3.4.0
     source: redhat-operators
     sourceNamespace: openshift-marketplace
     operatorGroup:
