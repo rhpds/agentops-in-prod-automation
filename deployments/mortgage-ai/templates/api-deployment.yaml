@@ -255,6 +255,11 @@ spec:
                 secretKeyRef:
                   name: {{ include "mortgage-ai.fullname" . }}-secret
                   key: MLFLOW_TRACKING_TOKEN
+            - name: MLFLOW_TRACKING_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mortgage-ai.fullname" . }}-secret
+                  key: MLFLOW_TRACKING_AUTH
             - name: MLFLOW_TRACKING_INSECURE_TLS
               valueFrom:
                 secretKeyRef:
