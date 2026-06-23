@@ -1,9 +1,9 @@
 operators:
   rhods-operator:
-    channel: beta
+    channel: stable-3.x
     namespace: redhat-ods-operator
     installPlanApproval: Automatic
-    startingCSV: rhods-operator.3.4.0-ea.2
+    startingCSV: rhods-operator.3.4.0
     source: redhat-operators
     sourceNamespace: openshift-marketplace
     operatorGroup:
