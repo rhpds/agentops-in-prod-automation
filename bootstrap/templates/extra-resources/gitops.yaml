@@ -12,3 +12,11 @@ metadata:
   namespace: openshift-gitops
 spec:
   resourceTrackingMethod: annotation
+  applicationSet:
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "256Mi"
+      requests:
+        cpu: "125m"
+        memory: "128Mi"

@@ -12,6 +12,3 @@ spec:
   backendStoreUri: {{ .Values.mlflow.backend.storeUri | quote }}
   artifactsDestination: {{ .Values.mlflow.artifacts.destination | quote }}
   serveArtifacts: {{ .Values.mlflow.artifacts.serve }}
-  image:
-    imagePullPolicy: {{ .Values.mlflow.image.pullPolicy }}
-    image: quay.io/opendatahub/mlflow:odh-stable
