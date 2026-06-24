@@ -16,7 +16,7 @@ remotellm:
   apiToken: "paste-your-token-here"
   url: "https://nemotron-nano-3-nemo.apps.ocp.cloud.rhai-tmm.dev/v1"
   id: "nvidia/nemotron-3-nano"
-  
+
 deployer:
   apiUrl: https://api.cluster-guid.sandbox.opentlc.com:6443
   domain: apps.cluster-guid.sandbox.opentlc.com

@@ -2,7 +2,7 @@
 #
 # Override patterns:
 #   External DB:        --set database.enabled=false
-#                       --set secrets.DATABASE_URL=postgresql+asyncpg://...<br>
+#                       --set secrets.DATABASE_URL=postgresql+asyncpg://...
 #   External Keycloak:  --set keycloak.enabled=false
 #                       --set secrets.KEYCLOAK_URL=https://...
 #   External MinIO/S3:  --set minio.enabled=false
@@ -69,6 +69,7 @@ secrets:
   MLFLOW_EXPERIMENT_NAME: ""
   MLFLOW_WORKSPACE: ""
   MLFLOW_TRACKING_TOKEN: ""
+  MLFLOW_TRACKING_AUTH: ""
   MLFLOW_TRACKING_INSECURE_TLS: "false"
 
   # Admin panel
@@ -123,7 +124,7 @@ api:
   healthCheck:
     enabled: true
     path: /health/
-    initialDelaySeconds: 30  # API is ready in ~17s; 300s caused PostSync timeout loop on AWS EBS
+    initialDelaySeconds: 30
     periodSeconds: 10
     failureThreshold: 20
 # UI configuration
