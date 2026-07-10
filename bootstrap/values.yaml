@@ -3,9 +3,9 @@
 
 bootstrap:
   # Git repository URL
-  repoURL: https://github.com/eformat/agentops-in-prod-automation-aws
+  repoURL: https://github.com/rhpds/agentops-in-prod-automation
   # Branch or tag to use
-  targetRevision: fix-bootstrap-sync
+  targetRevision: feat/nemo-model-switch
 
 user:
   count: 1
