@@ -1,0 +1,4 @@
+# Storage class for Loki and MinIO PVCs (required by LokiStack CRD).
+# Set via bootstrap values.yaml for each cluster type.
+# Examples: "gp3-csi" (AWS), "ocs-external-storagecluster-ceph-rbd" (ODF/CNV)
+storageClassName: "ocs-external-storagecluster-ceph-rbd"
