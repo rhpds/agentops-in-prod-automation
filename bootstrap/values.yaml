@@ -17,6 +17,10 @@ remotellm:
   url: "https://nemotron-nano-3-nemo.apps.ocp.cloud.rhai-tmm.dev/v1"
   id: "nvidia/nemotron-3-nano"
 
+# Storage class for PVCs (Loki, MinIO, etc.). Required by LokiStack CRD.
+# Set per cluster: "gp3-csi" (AWS), "ocs-external-storagecluster-ceph-rbd" (ODF/CNV)
+storageClassName: "ocs-external-storagecluster-ceph-rbd"
+
 deployer:
   apiUrl: https://api.cluster-guid.sandbox.opentlc.com:6443
   domain: apps.cluster-guid.sandbox.opentlc.com
