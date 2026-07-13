@@ -19,7 +19,7 @@ remotellm:
 
 # Storage class for PVCs (Loki, MinIO, etc.). Required by LokiStack CRD.
 # Set per cluster: "gp3-csi" (AWS), "ocs-external-storagecluster-ceph-rbd" (ODF/CNV)
-storageClassName: "ocs-external-storagecluster-ceph-rbd"
+storageClassName: "gp3-csi"
 
 deployer:
   apiUrl: https://api.cluster-guid.sandbox.opentlc.com:6443
