@@ -43,6 +43,8 @@ spec:
               MLFLOW_EXPERIMENT_NAME: "mortgage-ai"
               MLFLOW_WORKSPACE: "wksp-{{ `{{ user }}` }}"
               MLFLOW_TRACKING_INSECURE_TLS: "true"
+            routes:
+              sharedHost: "mortgage-ai-wksp-{{ `{{ user }}` }}.{{ .Values.deployer.domain }}"
             minio:
               enabled: false
             keycloak:
