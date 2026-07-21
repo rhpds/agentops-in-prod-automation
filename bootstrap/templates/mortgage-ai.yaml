@@ -43,6 +43,10 @@ spec:
               MLFLOW_EXPERIMENT_NAME: "mortgage-ai"
               MLFLOW_WORKSPACE: "wksp-{{ `{{ user }}` }}"
               MLFLOW_TRACKING_INSECURE_TLS: "true"
+            global:
+              imageRegistry: quay.io
+              imageRepository: redhat-gpte
+              imageTag: "0.1.9-intel"
             routes:
               sharedHost: "mortgage-ai-wksp-{{ `{{ user }}` }}.{{ .Values.deployer.domain }}"
             minio:
@@ -53,7 +57,7 @@ spec:
               enabled: true
             ui:
               image:
-                tag: "0.1.9"
+                tag: "0.1.9-intel"
             mlflow:
               rbac:
                 enabled: true
