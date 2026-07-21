@@ -9,8 +9,8 @@
 #                       --set secrets.S3_ENDPOINT=https://...
 global:
   imageRegistry: quay.io
-  imageRepository: rh-ai-quickstart
-  imageTag: "0.1.9"
+  imageRepository: redhat-gpte
+  imageTag: "0.1.9-intel"
   imagePullPolicy: Always
   storageClass: ""
 

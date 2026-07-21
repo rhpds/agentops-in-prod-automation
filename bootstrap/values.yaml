@@ -5,7 +5,7 @@ bootstrap:
   # Git repository URL
   repoURL: https://github.com/rhpds/agentops-in-prod-automation
   # Branch or tag to use
-  targetRevision: feat/nemo-model-switch
+  targetRevision: intel-with-configurable-storage
 
 user:
   count: 1
