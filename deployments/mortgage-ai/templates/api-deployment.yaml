@@ -25,6 +25,12 @@ spec:
       {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.api.streamingFix.enabled }}
+      volumes:
+        - name: streaming-fix
+          configMap:
+            name: {{ include "mortgage-ai.fullname" . }}-streaming-fix
+      {{- end }}
       initContainers:
         {{- if .Values.database.enabled }}
         - name: wait-for-database
@@ -280,6 +286,15 @@ spec:
                 secretKeyRef:
                   name: {{ include "mortgage-ai.fullname" . }}-secret
                   key: SQLADMIN_SECRET_KEY
+          {{- if .Values.api.streamingFix.enabled }}
+          volumeMounts:
+            - name: streaming-fix
+              mountPath: /app/packages/api/src/agents/base.py
+              subPath: base.py
+            - name: streaming-fix
+              mountPath: /app/packages/api/src/routes/_chat_handler.py
+              subPath: _chat_handler.py
+          {{- end }}
           {{- if .Values.api.healthCheck.enabled }}
           livenessProbe:
             httpGet:

@@ -1,0 +1,13 @@
+{{- if .Values.api.streamingFix.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mortgage-ai.fullname" . }}-streaming-fix
+  labels:
+    {{- include "mortgage-ai.labels" . | nindent 4 }}
+data:
+  base.py: |
+{{ .Files.Get "files/base.py" | indent 4 }}
+  _chat_handler.py: |
+{{ .Files.Get "files/_chat_handler.py" | indent 4 }}
+{{- end }}

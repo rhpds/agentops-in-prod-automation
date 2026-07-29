@@ -121,6 +121,8 @@ api:
     limits:
       memory: "4Gi"
       cpu: "2000m"
+  streamingFix:
+    enabled: false
   healthCheck:
     enabled: true
     path: /health/
