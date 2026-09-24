@@ -191,8 +191,8 @@ minio:
   enabled: true
   name: minio
   image:
-    repository: minio/minio
-    tag: latest
+    repository: quay.io/rh-aiservices-bu/minio
+    tag: RELEASE.2025-09-07T16-13-09Z
   persistence:
     enabled: true
     size: 10Gi
