@@ -47,7 +47,7 @@ spec:
             claimName: minio-pvc
       containers:
         - name: minio
-          image: quay.io/minio/minio:RELEASE.2024-06-29T01-20-47Z
+          image: quay.io/rh-aiservices-bu/minio:RELEASE.2025-09-07T16-13-09Z
           imagePullPolicy: IfNotPresent
           args:
             - server
@@ -144,7 +144,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: job
-          image: minio/mc:latest
+          image: quay.io/rh-aiservices-bu/mc:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: MC_CONFIG_DIR
