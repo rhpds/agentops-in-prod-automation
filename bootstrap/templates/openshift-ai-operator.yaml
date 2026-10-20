@@ -4,6 +4,8 @@ kind: Application
 metadata:
   name: openshift-ai-operator
   namespace: openshift-gitops
+  labels:
+    demo.redhat.com/application: ""
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
