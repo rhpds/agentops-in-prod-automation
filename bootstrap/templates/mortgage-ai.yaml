@@ -17,6 +17,8 @@ spec:
     metadata:
       name: mortgage-ai-{{ `{{ user }}` }}
       namespace: openshift-gitops
+      labels:
+        demo.redhat.com/application: ""
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
