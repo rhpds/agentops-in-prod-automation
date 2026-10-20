@@ -16,7 +16,7 @@ spec:
   sources:
   - path: charts/install-operators
     repoURL: https://github.com/jharmison-redhat/openshift-setup
-    targetRevision: ce78b89b3e1eee5554aa1198f72f8ff50e5adcd8
+    targetRevision: 88caea33279dcbde96caf50965d29780c8fe8f5b
     helm:
       valueFiles:
         - $values/deployments/openshift-ai-operator/values.yaml
