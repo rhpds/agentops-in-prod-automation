@@ -1,3 +1,9 @@
 channel: v5
 sessionSecret: ""
 username: user1
+
+# Use the authenticated cluster metrics endpoint rather than a legacy RHOAI service.
+# Set bearerAuth=false only for a separately validated endpoint without bearer auth.
+rhoaiDatasource:
+  url: https://thanos-querier.openshift-monitoring.svc:9091
+  bearerAuth: true

@@ -3,6 +3,12 @@
 mlflow:
   name: mlflow
 
+  # Leave empty to use the operator image. Only override with a validated image
+  # compatible with the installed RHOAI release; never use a cluster-local image.
+  image:
+    image: ""
+    imagePullPolicy: IfNotPresent
+
   storage:
     accessModes:
       - ReadWriteOnce

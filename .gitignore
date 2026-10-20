@@ -20,6 +20,11 @@ Chart.lock
 *secret*.yaml
 !**/templates/*secret*.yaml
 
+# Local Python test environment
+.venv/
+__pycache__/
+*.pyc
+
 # Temporary files
 *.tmp
 *.bak
