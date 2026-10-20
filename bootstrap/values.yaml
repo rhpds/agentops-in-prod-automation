@@ -19,9 +19,20 @@ gitops:
         memory: "4Gi"
 
 # Optional maintainer-validated image override; otherwise use the RHOAI default.
+#
+# Pinned to the RHOAI 3.4.4 odh-mlflow-rhel9 image. The 3.4.5 rebuild of this
+# image dropped the "kubernetes" Python package, which the operator's
+# unconditional --workspace-store-uri=kubernetes:// server flag depends on to
+# register its workspace provider - MLflow crashes on startup with
+# UnsupportedWorkspaceStoreURIException before it ever serves. Same MLflow
+# version (3.10.1+rhaiv.3) either way, only this dependency differs, so this
+# is a safe default while we're pinned to the stable-3.4 channel. Confirmed
+# live against both digests during a production incident (see
+# https://redhat-internal.slack.com/archives/C04N203SNUW/p1792480748640399).
+# Re-validate before bumping to RHOAI 3.5.x.
 mlflow:
   image:
-    image: ""
+    image: "registry.redhat.io/rhoai/odh-mlflow-rhel9@sha256:fe4719b7cb5094a81bca1a06a3cf0ea266f2f10ccff4096b420e1ae678a2d503"
     imagePullPolicy: IfNotPresent
 
 user:

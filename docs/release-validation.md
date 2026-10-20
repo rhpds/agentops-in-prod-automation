@@ -37,24 +37,59 @@ Verify all of the following on the fresh environment:
 
 ## MLflow image override
 
-Leave `mlflow.image.image` empty to use the image supplied by the pinned operator.
-The missing Kubernetes dependency observed in the 3.4.5 image has **not** been
-validated against a fresh 3.4.4 deployment. If 3.4.4 also fails, obtain and validate
-a compatible maintainer/vendor-approved image before release.
+`bootstrap/values.yaml` pins `mlflow.image.image` to the RHOAI 3.4.4
+`odh-mlflow-rhel9` digest (`sha256:fe4719b7...`) by default. The 3.4.5 rebuild of
+this image dropped the `kubernetes` Python package, which the operator's
+unconditional `--workspace-store-uri=kubernetes://` server flag depends on;
+MLflow crashes on startup with `UnsupportedWorkspaceStoreURIException` before it
+ever serves. Confirmed live against both digests during a production incident
+(see the linked Slack thread in `bootstrap/values.yaml`'s comment) - this is not
+a placeholder, it is the validated fix. Same MLflow version either way
+(`3.10.1+rhaiv.3`), so this is a safe default while pinned to `stable-3.4`.
 
-An optional image override can be supplied to bootstrap and is forwarded to the
-MLflow chart. The same values can be used when rendering the MLflow chart alone:
+This override can be supplied to bootstrap and is forwarded to the MLflow chart.
+The same values can be used when rendering the MLflow chart alone:
 
 ```yaml
 mlflow:
   image:
-    image: registry.example.com/workshop/mlflow:validated
+    image: registry.redhat.io/rhoai/odh-mlflow-rhel9@sha256:fe4719b7cb5094a81bca1a06a3cf0ea266f2f10ccff4096b420e1ae678a2d503
     imagePullPolicy: IfNotPresent
 ```
 
-The image above is a placeholder, not a published fix. Prefer a validated digest.
-Do not publish an environment-local registry image or temporary Argo CD ignore
-rules as the permanent solution.
+Re-validate this digest (or obtain a new one) before bumping the RHOAI channel -
+e.g. to `stable-3.5` - since the dependency gap is specific to the 3.4.5 image
+and may not apply, or may recur differently, in later releases. Do not publish
+an environment-local registry image or temporary Argo CD ignore rules as the
+permanent solution.
+
+### Recovering an already-drifted cluster
+
+Pinning the operator (above) does not repair a cluster that already upgraded to
+the broken 3.4.5 image - the Subscription/CSV pin only prevents *future*
+drift, and the bad image comes from the operator's `RELATED_IMAGE`, not from an
+ArgoCD-managed resource, so `argocd app sync` cannot fix it either. To recover a
+live cluster already stuck on the broken image:
+
+```bash
+GOOD='registry.redhat.io/rhoai/odh-mlflow-rhel9@sha256:fe4719b7cb5094a81bca1a06a3cf0ea266f2f10ccff4096b420e1ae678a2d503'
+oc patch applications.argoproj.io mlflow -n openshift-gitops --type=merge -p '{"spec":{"syncPolicy":{"automated":null}}}'
+oc patch mlflow mlflow --type=merge -p '{"spec":{"image":{"image":"'"$GOOD"'","imagePullPolicy":"IfNotPresent"}}}'
+oc rollout status deploy/mlflow -n redhat-ods-applications --timeout=5m
+oc get mlflow mlflow -o jsonpath='{.status.conditions[?(@.type=="Available")].status} {.status.url}{"\n"}'
+```
+
+The `syncPolicy.automated: null` patch is required first - `mlflow`'s
+`selfHeal: true` will otherwise revert the image patch on the next reconcile.
+Once MLflow is `Available`, restart the mortgage app so it picks up the
+now-running MLflow (it will not emit traces until this runs, even though the
+app itself stays healthy):
+
+```bash
+oc rollout restart deploy/mortgage-ai-api -n wksp-user1
+```
+MLflow is a cluster-scoped singleton, so this is one patch per cluster
+regardless of per-user seat count; the mortgage restart is per-namespace/seat.
 
 ## Grafana metrics endpoint
 
