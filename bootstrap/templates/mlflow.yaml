@@ -14,6 +14,13 @@ spec:
     path: deployments/mlflow
     repoURL: {{ .Values.bootstrap.repoURL }}
     targetRevision: {{ .Values.bootstrap.targetRevision }}
+    {{- if .Values.mlflow.image.image }}
+    helm:
+      valuesObject:
+        mlflow:
+          image:
+            {{- toYaml .Values.mlflow.image | nindent 12 }}
+    {{- end }}
   syncPolicy:
     automated:
       prune: true

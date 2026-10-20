@@ -3,6 +3,11 @@ kind: MLflow
 metadata:
   name: {{ .Values.mlflow.name }}
 spec:
+  {{- if .Values.mlflow.image.image }}
+  image:
+    image: {{ .Values.mlflow.image.image | quote }}
+    imagePullPolicy: {{ .Values.mlflow.image.imagePullPolicy | quote }}
+  {{- end }}
   storage:
     accessModes:
       {{- toYaml .Values.mlflow.storage.accessModes | nindent 6 }}

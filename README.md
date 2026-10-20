@@ -52,3 +52,17 @@ Each workshop user (`user1`..`userN`) gets an isolated namespace (`wksp-userX`) 
 - **Grafana dashboards** -- LLM token usage, inference latency, agent performance metrics
 - **Data Science Pipelines** -- Kubeflow Pipelines for ML workflows
 - **OpenShift AI** -- model serving, notebooks, and platform ML tooling
+
+## Validation and release
+
+See [release validation](docs/release-validation.md) before publishing a new catalog
+release. Merging a PR does not update child applications pinned to an older tag,
+and a `startingCSV` does not downgrade an already-installed operator.
+
+Run the Helm regression tests locally (Helm and Python 3 are required):
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-dev.txt
+.venv/bin/python -B -m unittest discover -s tests -v
+```

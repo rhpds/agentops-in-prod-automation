@@ -28,6 +28,9 @@ spec:
       enabled: 'false'
   deployment:
     spec:
+      # A rolling update can attach the RWO PVC to two different nodes.
+      strategy:
+        type: Recreate
       template:
         spec:
           volumes:

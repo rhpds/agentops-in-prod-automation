@@ -4,8 +4,25 @@
 bootstrap:
   # Git repository URL
   repoURL: https://github.com/rhpds/agentops-in-prod-automation
-  # Branch or tag to use
-  targetRevision: 1.0.0
+  # Publish this tag from the reviewed release commit before consumers use it.
+  # For pre-merge testing, override this with the PR branch or commit.
+  targetRevision: v1.0.2
+
+gitops:
+  controller:
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "2Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+
+# Optional maintainer-validated image override; otherwise use the RHOAI default.
+mlflow:
+  image:
+    image: ""
+    imagePullPolicy: IfNotPresent
 
 user:
   count: 1
@@ -16,7 +33,7 @@ remotellm:
   apiToken: "paste-your-token-here"
   url: "paste-your-url-here"
   id: "paste-your-model-id-here"
-  
+
 deployer:
   apiUrl: https://api.cluster-guid.sandbox.opentlc.com:6443
   domain: apps.cluster-guid.sandbox.opentlc.com

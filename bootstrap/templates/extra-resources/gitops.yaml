@@ -12,6 +12,9 @@ metadata:
   namespace: openshift-gitops
 spec:
   resourceTrackingMethod: annotation
+  controller:
+    resources:
+      {{- toYaml .Values.gitops.controller.resources | nindent 6 }}
   applicationSet:
     resources:
       limits:
